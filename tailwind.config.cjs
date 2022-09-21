@@ -2,7 +2,14 @@
 module.exports = {
   content: ['./src/**/*.{js,ts,jsx,tsx}'],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        noto: ['Noto Sans JP']
+      },
+      backgroundImage: {
+        'hero': "url('/hero.jpg')",
+      }
+    },
   },
   plugins: [],
 };
