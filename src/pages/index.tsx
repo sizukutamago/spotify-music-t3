@@ -6,29 +6,27 @@ import { signIn, signOut, useSession } from 'next-auth/react';
 const Index: NextPage = () => {
   const { data: session } = useSession();
 
-  const LoginButton = () => {
+  type ButtonType = {
+    type: 'login' | 'logout';
+  };
+
+  const Button = (props: ButtonType) => {
+    props.type;
     return (
       <button
         className='font-bold lg:text-xl rounded-lg bg-white p-2.5'
         onClick={() => {
-          signIn('spotify');
+          props.type === 'login' ? signIn('spotify') : signOut();
         }}
       >
-        ログイン
+        {props.type === 'login' ? 'ログイン' : 'ログアウト'}
       </button>
     );
   };
 
-  const LogoutButton = () => {
-    return (
-      <button
-        className='font-bold lg:text-xl rounded-lg bg-white p-2.5'
-        onClick={() => signOut()}
-      >
-        ログアウト
-      </button>
-    );
-  };
+  const LoginButton = () => <Button type='login' />;
+
+  const LogoutButton = () => <Button type='logout' />;
 
   return (
     <div className='h-screen'>
