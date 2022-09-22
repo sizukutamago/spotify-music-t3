@@ -8,25 +8,37 @@ const Index: NextPage = () => {
 
   type ButtonType = {
     type: 'login' | 'logout';
+    onClickFn(): void;
   };
 
   const Button = (props: ButtonType) => {
-    props.type;
     return (
       <button
         className='font-bold lg:text-xl rounded-lg bg-white p-2.5'
-        onClick={() => {
-          props.type === 'login' ? signIn('spotify') : signOut();
-        }}
+        onClick={props.onClickFn}
       >
         {props.type === 'login' ? 'ログイン' : 'ログアウト'}
       </button>
     );
   };
 
-  const LoginButton = () => <Button type='login' />;
+  const LoginButton = () => (
+    <Button
+      type='login'
+      onClickFn={() => {
+        signIn('spotify');
+      }}
+    />
+  );
 
-  const LogoutButton = () => <Button type='logout' />;
+  const LogoutButton = () => (
+    <Button
+      type='logout'
+      onClickFn={() => {
+        signOut();
+      }}
+    />
+  );
 
   return (
     <div className='h-screen'>
