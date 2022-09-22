@@ -1,8 +1,35 @@
 import type { NextPage } from 'next';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faPlay } from '@fortawesome/free-solid-svg-icons';
+import { signIn, signOut, useSession } from 'next-auth/react';
 
 const Index: NextPage = () => {
+  const { data: session } = useSession();
+
+  const LoginButton = () => {
+    return (
+      <button
+        className='font-bold lg:text-xl rounded-lg bg-white p-2.5'
+        onClick={() => {
+          signIn('spotify');
+        }}
+      >
+        ログイン
+      </button>
+    );
+  };
+
+  const LogoutButton = () => {
+    return (
+      <button
+        className='font-bold lg:text-xl rounded-lg bg-white p-2.5'
+        onClick={() => signOut()}
+      >
+        ログアウト
+      </button>
+    );
+  };
+
   return (
     <div className='h-screen'>
       <header className='h-24 bg-green-200'>
@@ -12,9 +39,7 @@ const Index: NextPage = () => {
             <span className='font-extrabold text-4xl'>music(仮)</span>
           </div>
 
-          <button className='text-xl rounded-lg bg-white p-2.5'>
-            ログイン
-          </button>
+          {!session ? <LoginButton /> : <LogoutButton />}
         </div>
       </header>
       <section className='h-[calc(100vh-6rem)] m-auto'>
@@ -25,12 +50,7 @@ const Index: NextPage = () => {
           <p className='mb-16 font-light lg:text-2xl text-xl'>
             spotifyにログインして新しい部屋を作る
           </p>
-          <a
-            href='#'
-            className='font-bold lg:text-xl text-xl rounded-lg bg-white p-2.5'
-          >
-            ログイン
-          </a>
+          <LoginButton />
         </div>
       </section>
     </div>
