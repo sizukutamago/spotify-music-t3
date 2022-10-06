@@ -1,17 +1,44 @@
-import { NextPage } from 'next';
-import { useRouter } from 'next/router';
 import { trpc } from '../../utils/trpc';
 import Layout from '../../components/layout';
+import { FC, useCallback, useEffect, useState } from 'react';
+import { WebPlaybackSDK } from 'react-spotify-web-playback-sdk';
+import { signIn, useSession } from 'next-auth/react';
+import { Player } from '../../components/pages/player';
 
-const RoomId: NextPage = () => {
-  const router = useRouter();
-  const roomId = router.query.roomId as string;
+const RoomId: FC = () => {
+  const [accessToken, setAccessToken] = useState<string>('');
 
-  const { data: room } = trpc.useQuery(['room.getRoomById', { roomId }]);
-  console.log(room);
+  const { data: session } = useSession();
+  const getUser = trpc.useQuery(['user.getUser']);
+
+  useEffect(() => {
+    const { data: userData } = getUser;
+
+    if (session?.error === 'refreshAccessTokenError') {
+      signIn();
+      return;
+    }
+
+    const spotifyAccount = userData?.accounts.find(
+      (account) => account.provider === 'spotify'
+    );
+
+    setAccessToken(spotifyAccount?.access_token ?? '');
+  }, [getUser, session]);
+
+  const getOAuthToken: Spotify.PlayerInit['getOAuthToken'] = useCallback(
+    (callback) => callback(accessToken),
+    [accessToken]
+  );
+
   return (
     <Layout>
-      <div>room {roomId}</div>
+      <WebPlaybackSDK
+        initialDeviceName='spotify-music'
+        getOAuthToken={getOAuthToken}
+      >
+        <Player accessToken={accessToken} />
+      </WebPlaybackSDK>
     </Layout>
   );
 };
