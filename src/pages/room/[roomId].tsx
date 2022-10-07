@@ -2,29 +2,26 @@ import { trpc } from '../../utils/trpc';
 import Layout from '../../components/layout';
 import { FC, useCallback, useEffect, useState } from 'react';
 import { WebPlaybackSDK } from 'react-spotify-web-playback-sdk';
-import { signIn, useSession } from 'next-auth/react';
 import { Player } from '../../components/pages/player';
+import { useRouter } from 'next/router';
 
 const RoomId: FC = () => {
   const [accessToken, setAccessToken] = useState<string>('');
 
-  const { data: session } = useSession();
   const getUser = trpc.useQuery(['user.getUser']);
+
+  const router = useRouter();
+  const roomId = router.query.roomId as string;
 
   useEffect(() => {
     const { data: userData } = getUser;
-
-    if (session?.error === 'refreshAccessTokenError') {
-      signIn();
-      return;
-    }
 
     const spotifyAccount = userData?.accounts.find(
       (account) => account.provider === 'spotify'
     );
 
     setAccessToken(spotifyAccount?.access_token ?? '');
-  }, [getUser, session]);
+  }, [getUser]);
 
   const getOAuthToken: Spotify.PlayerInit['getOAuthToken'] = useCallback(
     (callback) => callback(accessToken),
@@ -37,7 +34,7 @@ const RoomId: FC = () => {
         initialDeviceName='spotify-music'
         getOAuthToken={getOAuthToken}
       >
-        <Player accessToken={accessToken} />
+        <Player accessToken={accessToken} roomId={roomId} />
       </WebPlaybackSDK>
     </Layout>
   );

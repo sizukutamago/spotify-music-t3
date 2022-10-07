@@ -20,7 +20,7 @@ export const LoginButton = () => (
   <Button
     type='login'
     onClick={() => {
-      signIn('spotify');
+      console.log(signIn('spotify'));
     }}
   />
 );

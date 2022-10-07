@@ -15,7 +15,7 @@ export const authOptions: NextAuthOptions = {
   callbacks: {
     session({ session, user, token }) {
       if (session.user) {
-        session.user = user;
+        session.user.id = user.id;
       }
 
       if (token) {
@@ -29,6 +29,9 @@ export const authOptions: NextAuthOptions = {
       return `${baseUrl}/room`;
     },
     async jwt({ token, user, account }) {
+      console.log({ token });
+      console.log({ user });
+      console.log({ account });
       if (account && user) {
         return {
           accessToken: account.access_token,
