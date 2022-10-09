@@ -1,19 +1,30 @@
 import { memo } from 'react';
-import { SearchItem } from '../../types/spotify';
+import { PlayListItem, SearchItem } from '../../types/spotify';
 
 type Props = {
   searchItems: SearchItem[];
-  setUri: (uri: string) => void;
+  setPlayList: (playList: PlayListItem) => void;
 };
 
 export const SearchList = memo(function SearchList({
   searchItems,
-  setUri,
+  setPlayList,
 }: Props): JSX.Element {
   return (
     <ul>
       {searchItems.map((searchItem) => (
-        <li key={searchItem.id} onClick={() => setUri(searchItem.album.uri)}>
+        <li
+          key={searchItem.id}
+          onClick={() => {
+            setPlayList({
+              uri: searchItem.album.uri,
+              imageUrl:
+                searchItem.album.images.find((image) => image.height === 64)
+                  ?.url ?? '',
+              name: searchItem.name,
+            });
+          }}
+        >
           <img
             src={
               searchItem.album.images.find((image) => image.height === 64)?.url

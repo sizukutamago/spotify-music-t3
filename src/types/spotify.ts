@@ -10,3 +10,9 @@ export type SearchItem = {
     }[];
   };
 };
+
+export type PlayListItem = {
+  uri: string;
+  name: string;
+  imageUrl: string;
+};

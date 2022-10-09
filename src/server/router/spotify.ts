@@ -44,17 +44,65 @@ export const spotifyRouter = createRouter()
       }
     },
   })
+  .query('getPlayList', {
+    input: z.object({
+      roomId: z.string(),
+    }),
+    async resolve({ ctx, input }) {
+      try {
+        return await ctx.prisma.playList.findMany({
+          select: {
+            id: true,
+            uri: true,
+            image_url: true,
+            name: true,
+          },
+          where: {
+            AND: [
+              {
+                roomId: input.roomId,
+                played: false,
+              },
+            ],
+          },
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    },
+  })
+  .mutation('addPlayList', {
+    input: z.object({
+      roomId: z.string(),
+      uri: z.string(),
+      imageUrl: z.string(),
+      name: z.string(),
+    }),
+    async resolve({ ctx, input }) {
+      try {
+        return await ctx.prisma.playList.create({
+          data: {
+            roomId: input.roomId,
+            uri: input.uri,
+            image_url: input.imageUrl,
+            name: input.name,
+          },
+        });
+      } catch (error) {
+        console.log(error);
+      }
+    },
+  })
   .middleware(async ({ ctx, next }) => {
     if (!ctx.session) {
       throw new TRPCError({ code: 'UNAUTHORIZED' });
     }
 
-    console.log({ ctx });
-
     return next();
   })
   .mutation('play', {
     input: z.object({
+      id: z.string(),
       roomId: z.string(),
       deviceId: z.string(),
       uri: z.string(),
@@ -85,7 +133,14 @@ export const spotifyRouter = createRouter()
           }
         );
 
-        console.log(response);
+        return await ctx.prisma.playList.update({
+          where: {
+            id: input.id,
+          },
+          data: {
+            played: true,
+          },
+        });
       } catch (error) {
         console.log(error);
       }

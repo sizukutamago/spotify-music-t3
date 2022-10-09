@@ -65,8 +65,20 @@ model VerificationToken {
 }
 
 model Room {
+    id          String    @id @default(cuid())
+    userId      String
+    createdAt   DateTime  @default(now())
+    user        User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+    playLists   PlayList[]
+}
+
+model PlayList {
     id        String    @id @default(cuid())
-    userId    String
-    createdAt  DateTime  @default(now())
-    user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+    roomId    String
+    uri       String
+    image_url String
+    name      String
+    played    Boolean   @default(false)
+    createdAt DateTime  @default(now())
+    room      Room      @relation(fields: [roomId], references: [id], onDelete: Cascade)
 }
